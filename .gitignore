@@ -7,6 +7,7 @@ openocd_rmd_transfer_cmsis_dap.cfg
 # IDE 配置和调试会话
 .idea/
 *.jdebug.user
+rmpp/app/target/target.jdebug
 
 # CMake 构建目录和编译产物
 cmake-build-*/
