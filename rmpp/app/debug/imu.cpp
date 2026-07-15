@@ -1,9 +1,9 @@
-#include "../infantry/misc.hpp"
-#include "../infantry/imu.hpp"
+#include "../target/misc.hpp"
+#include "../target/imu.hpp"
 
 void setup() {
     BSP::Init();
-    // imu.Calibrate();
+     imu.Calibrate();
 }
 
 void loop() {

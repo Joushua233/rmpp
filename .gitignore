@@ -1,1 +1,19 @@
-build
+﻿build
+# 不要上传的项目/本地文件
+RMDL7025Transfer/
+rmpp/app/outpost/
+openocd_rmd_transfer_cmsis_dap.cfg
+
+# IDE 配置和调试会话
+.idea/
+*.jdebug.user
+
+# CMake 构建目录和编译产物
+cmake-build-*/
+*.elf
+*.map
+*.o
+*.d
+*.a
+*.so
+*.obj
