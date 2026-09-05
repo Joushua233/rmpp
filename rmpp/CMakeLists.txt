@@ -4,9 +4,9 @@ file(GLOB_RECURSE USER_SOURCES
         # 整车代码
         # "app/hero/app.cpp"
         # "app/infantry/app.cpp"
-        # "app/sentry/app.cpp"
-         "app/target/app.cpp"
-        # "app/outpost/app.cpp"
+         "app/sentry/app.cpp"
+        # "app/target/app.cpp"
+        #"app/outpost/app.cpp"
 
         # 调试代码
         # "app/debug/motor.cpp"
