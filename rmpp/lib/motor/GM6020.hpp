@@ -14,7 +14,8 @@ public:
     GM6020(const config_t& config);
 
     int16_t GetCurrentCmd() const;
-    int16_t GetVoltageCmd() const;
+    // 转速补偿系数默认 1，不影响 PID 输出。
+    int16_t GetVoltageCmd(float speed_compensation_gain = 1.0f) const;
 
 private:
     static constexpr uint16_t MAX_VOLTAGE_CMD = 25000;

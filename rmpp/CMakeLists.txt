@@ -1,4 +1,5 @@
-file(GLOB_RECURSE USER_SOURCES
+# 新增或删除驱动文件后自动更新源码列表，避免增量构建漏编译。
+file(GLOB_RECURSE USER_SOURCES CONFIGURE_DEPENDS
         "lib/*.*"
 
         # 整车代码

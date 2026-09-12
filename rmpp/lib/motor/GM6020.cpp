@@ -27,12 +27,12 @@ int16_t GM6020::GetCurrentCmd() const {
 
     return cmd;
 }
-int16_t GM6020::GetVoltageCmd() const {
+int16_t GM6020::GetVoltageCmd(const float speed_compensation_gain) const {
     if (is_connect == false || is_enable == false) return 0;
 
     int16_t cmd;
 
-    const UnitFloat voltage = unit::clamp(current.ref + Ke * speed.measure, MAX_VOLTAGE);
+    const UnitFloat voltage = unit::clamp(current.ref + speed_compensation_gain * Ke * speed.measure, MAX_VOLTAGE);
     if (!config.is_invert) {
         cmd = (int16_t)((voltage / MAX_VOLTAGE).toFloat(V) * MAX_VOLTAGE_CMD);
     } else {

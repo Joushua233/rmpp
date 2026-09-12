@@ -7,12 +7,13 @@ void send_can_cmd() {
 
     const int16_t cmd1 = w1.GetCanCmd();
     const int16_t cmd2 = w2.GetCanCmd();
-    const int16_t cmd3 = 0;
-    const int16_t cmd4 = 0;
+    const int16_t cmd3 = w3.GetCanCmd();
+    const int16_t cmd4 = w4.GetCanCmd();
     const int16_t cmd5 = yaw2.GetVoltageCmd();
     const int16_t cmd6 = shoot.GetCanCmd();
-    const int16_t cmd7 = s1.GetVoltageCmd();
-    const int16_t cmd8 = s2.GetVoltageCmd();
+    // 四个舵电机的转速补偿减半，测试转舵稳定性。
+    const int16_t cmd7 = s1.GetVoltageCmd(0.5f);
+    const int16_t cmd8 = s2.GetVoltageCmd(0.5f);
 
     uint8_t data[8];
     data[0] = cmd1 >> 8;
@@ -33,6 +34,16 @@ void send_can_cmd() {
     data[6] = cmd8 >> 8;
     data[7] = cmd8;
     BSP::CAN::Transmit(1, 0x1FF, data);
+
+    // GM6020 ID 5/6：0x2FF slot1/2；未用 slot3 和保留 slot4 必须清零。
+    const int16_t cmd9 = s3.GetVoltageCmd(0.5f);
+    const int16_t cmd10 = s4.GetVoltageCmd(0.5f);
+    data[0] = cmd9 >> 8;
+    data[1] = cmd9;
+    data[2] = cmd10 >> 8;
+    data[3] = cmd10;
+    data[4] = data[5] = data[6] = data[7] = 0;
+    BSP::CAN::Transmit(1, 0x2FF, data);
 
     yaw1.SendCanCmd();
 
