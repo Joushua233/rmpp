@@ -50,5 +50,6 @@ private:
 
     void sendEnable() const;
     void sendDisable() const;
+    void sendClearError() const;
     void sendTorque(const UnitFloat<>& torque) const;
 };

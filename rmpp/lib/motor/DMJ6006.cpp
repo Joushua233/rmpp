@@ -32,14 +32,38 @@ void DMJ6006::SendCanCmd() {
         sendDisable();
         return;
     }
-    if (err_code >= OVP) { // 故障时失能，不自动清除过流、过温等保护。
-        send_cnt = 0;
-        sendDisable();
+    if (err_code >= OVP) {
+        // 仅对通讯超时自动清错；过流、过温、过压等硬件故障仍保持失能。
+        if (err_code == COMM_LOST) {
+            const uint32_t recovery_phase = send_cnt++ % 100;
+            if (recovery_phase == 0) {
+                sendClearError();
+            } else if (recovery_phase == 1) {
+                sendEnable();
+            } else {
+                sendTorque(0 * Nm);
+            }
+        } else {
+            sendDisable();
+        }
         return;
     }
 
-    // 第一次调用即发使能，不依赖先收到反馈，避免启动时互相等待。
-    // 1 kHz 调用时每 100 ms 重发一次使能，重连期间只发送零扭矩。
+    // 主控未收到反馈时也可能是电调通讯超时，执行同样的单帧恢复序列。
+    if (!is_connect) {
+        const uint32_t recovery_phase = send_cnt++ % 100;
+        if (recovery_phase == 0) {
+            sendClearError();
+        } else if (recovery_phase == 1) {
+            sendEnable();
+        } else {
+            sendTorque(0 * Nm);
+        }
+        return;
+    }
+
+    // 电调需要周期刷新使能状态；1 kHz 调用时每 100 ms 发送一次使能帧。
+    // CAN1 负载较高，每个控制周期最多发送一帧 DM 指令。
     if (send_cnt++ % 100 == 0) {
         sendEnable();
     } else if (is_connect && err_code == ENABLED) {
@@ -94,6 +118,11 @@ void DMJ6006::sendEnable() const {
 
 void DMJ6006::sendDisable() const {
     uint8_t data[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfd};
+    BSP::CAN::Transmit(config.can_port, config.slave_id, data, 8);
+}
+
+void DMJ6006::sendClearError() const {
+    uint8_t data[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfb};
     BSP::CAN::Transmit(config.can_port, config.slave_id, data, 8);
 }
 

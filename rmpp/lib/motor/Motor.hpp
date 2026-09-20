@@ -76,7 +76,10 @@ public:
         UnitFloat<A> current;
         UnitFloat<Nm> torque;
         UnitFloat<rpm> speed;
-        Angle<deg> angle;
+        // 原始协议角度不能使用 Angle：Angle 会在写入时立即归一化到
+        // (-180, 180]，导致 EL05 的 ±4pi 多圈反馈在应用 offset 前丢失圈数。
+        // 角度修正完成后再由 callback() 转为 Angle。
+        UnitFloat<deg> angle;
     } raw;
 
     Motor(const config_t& config);

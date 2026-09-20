@@ -22,12 +22,12 @@
 
 // 大yaw电机：保留主控角度 PD 和速度前馈，DMJ6006 使用 MIT 纯扭矩模式。
 // 沿用原 MF9025 的增益表达方式，乘扭矩系数后作为扭矩 PD 参数。
-// DMJ6006 初调：降低角度、速度增益，限制输出为 1.44 Nm，实机稳定后再逐步调整。
+// DMJ6006 大 yaw：主控角度 PD，输出限制约 1.92 Nm。
 inline PID::config_t yaw1_pid = {
-    .kp = (1.5f * A) * MF9025::Kt / (1.8 * deg),
-    .kd = (4.5f * A) * MF9025::Kt / (18 * deg_s),
-    .max_out = (4.5f * A) * MF9025::Kt,
-    .fc = 10 * Hz,
+    .kp = (3.0f * A) * MF9025::Kt / (1.8 * deg),
+    .kd = (6.0f * A) * MF9025::Kt / (18 * deg_s),
+    .max_out = (6.0f * A) * MF9025::Kt,
+    .fc = 30 * Hz,
 };
 // 与调试助手一致：CAN1 1 Mbps、MIT 模式，电调 CAN Timeout = 2000（100 ms）。
 // 电调通讯保护在上位机写入，独立于主控的反馈断联检测。
@@ -74,8 +74,12 @@ inline GM6020 yaw2({
 
 // pitch电机
 inline PID::config_t pitch_speed_pid = {
-    .kp = (3 * Nm) / (150 * deg_s),
-    .max_out = 0.5f * Nm, // EL05 首次联调限扭，确认方向后再逐步提高
+    .kp = (0.7f * Nm) / (150 * deg_s),
+    .ki = (0.5f * Nm) / (150 * deg),
+    .kd = (0.5f * Nm) / (1000 * deg_ss),
+    .ff = 0.4f * Nm, // 近水平小角度范围内的重力补偿，正方向为抬升
+    .max_i = 0.3f * Nm,
+    .max_out = 3.0f * Nm, // 小幅提高 pitch 输出，继续保留较低联调扭矩
     .fc = 10 * Hz,
 };
 inline PID::config_t pitch_angle_pid = {
@@ -89,8 +93,8 @@ inline EL05 pitch({
     .master_id = EL05::DEFAULT_HOST_ID,
     .slave_id = EL05::DEFAULT_MOTOR_ID,
     .is_invert = false, // EL05 反馈方向与云台 IMU pitch 方向一致
-    .offset = 0 * deg, // 新电机绝对编码器需实机确认 pitch 机械零位
-    .is_limit = true,
+    .offset = -178 * deg, // 新电机绝对编码器需实机确认 pitch 机械零位
+    .is_limit = true, // pitch offset 已确认，限制摇杆积分目标不超出机械行程
     .limit_min = -22 * deg,
     .limit_max = 15 * deg,
     .control_mode = Motor::ANGLE_SPEED_MODE,
@@ -98,7 +102,7 @@ inline EL05 pitch({
     .speed_pid_config = &pitch_speed_pid,
     .angle_pid_config = &pitch_angle_pid,
 }, {
-    .is_torque_invert = true,
+    .is_torque_invert = false,
 });
 
 // 原 DM4310 pitch 配置保留；需切回时注释上面 EL05，再取消下面这段注释。

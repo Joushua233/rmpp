@@ -33,6 +33,13 @@ public:
     void OnLoop() override;
 
 private:
+    // 大 yaw 低频跟随总目标，小 yaw 承担快速残差。
+    static constexpr UnitFloat<> YAW1_FOLLOW_TAU = 30 * ms;
+    static constexpr UnitFloat<> YAW2_SPEED_FF_TAU = 40 * ms;
+    BSP::Dwt dwt_yaw_allocator;
+    bool is_yaw_allocator_init = false;
+    UnitFloat<deg_s> yaw2_speed_ff;
+
     // 角度正解：电机角度 -> 云台姿态
     void forward() override;
 
