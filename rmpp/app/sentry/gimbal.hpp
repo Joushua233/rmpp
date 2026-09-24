@@ -1,6 +1,5 @@
 #pragma once
 
-#include "motor/MF9025.hpp"
 #include "motor/DMJ6006.hpp"
 #include "motor/GM6020.hpp"
 #include "motor/DM4310.hpp"
@@ -9,7 +8,8 @@
 #include "imu.hpp"
 
 // 用于Ozone调参
-// #define yaw1_pid angle_pid
+// #define yaw1_speed_pid speed_pid
+// #define yaw1_angle_pid angle_pid
 // #define yaw1 motor
 //
 // #define yaw2_speed_pid speed_pid
@@ -20,14 +20,19 @@
 // #define pitch_angle_pid angle_pid
 // #define pitch motor
 
-// 大yaw电机：保留主控角度 PD 和速度前馈，DMJ6006 使用 MIT 纯扭矩模式。
-// 沿用原 MF9025 的增益表达方式，乘扭矩系数后作为扭矩 PD 参数。
-// DMJ6006 大 yaw：主控角度 PD，输出限制约 1.92 Nm。
-inline PID::config_t yaw1_pid = {
-    .kp = (3.0f * A) * MF9025::Kt / (1.8 * deg),
-    .kd = (6.0f * A) * MF9025::Kt / (18 * deg_s),
-    .max_out = (6.0f * A) * MF9025::Kt,
-    .fc = 30 * Hz,
+// 大yaw电机：主控使用角度外环 P + 速度内环 PID，DMJ6006 使用 MIT 纯扭矩模式。
+// MIT 内部 Kp/Kd 保持为 0，避免和主控串级环重复闭环。
+inline PID::config_t yaw1_speed_pid = {
+    .kp = (4.0f * Nm) / (100 * deg_s),
+    .ki = (2.0f * Nm) / (100 * deg),
+    .kd = (10.0f * Nm) / (30000 * deg_ss),
+    .max_i = 1.0f * Nm,
+    .max_out = 4.0f * Nm,
+    .fc = 10 * Hz,
+};
+inline PID::config_t yaw1_angle_pid = {
+    .kp = 5.0f * default_unit,
+    .max_out = 720 * deg_s,
 };
 // 与调试助手一致：CAN1 1 Mbps、MIT 模式，电调 CAN Timeout = 2000（100 ms）。
 // 电调通讯保护在上位机写入，独立于主控的反馈断联检测。
@@ -38,9 +43,10 @@ inline DMJ6006 yaw1({
     .slave_id = 0x11, // MIT 模式，无 ID 偏移
     .reduction = 1.0f, // 协议反馈输出轴位置，不能再除以内部 6:1 减速比
     .is_invert = true,
-    .control_mode = Motor::ANGLE_MODE,
+    .control_mode = Motor::ANGLE_SPEED_MODE,
     .pid_out_type = Motor::TORQUE_OUTPUT,
-    .angle_pid_config = &yaw1_pid,
+    .speed_pid_config = &yaw1_speed_pid,
+    .angle_pid_config = &yaw1_angle_pid,
 }, {
     .p_max = 3.14159f, // 与调试助手 PMAX 一致，单位 rad
     .v_max = 45.0f, // 与调试助手 VMAX 一致，单位 rad/s
@@ -49,9 +55,9 @@ inline DMJ6006 yaw1({
 
 // 小yaw电机
 inline PID::config_t yaw2_speed_pid = {
-    .kp = (25 * V) / (300 * deg_s),
-    .kd = (25 * V) / (30000 * deg_ss),
-    .max_out = 3 * A,
+    .kp = (30 * V) / (100 * deg_s),
+    .kd = (20 * V) / (30000 * deg_ss),
+    .max_out = 10 * A,
     .fc = 10 * Hz,
 };
 inline PID::config_t yaw2_angle_pid = {
