@@ -41,7 +41,7 @@ inline DMJ6006 yaw1({
     .can_port = 1,
     .master_id = 0x10,
     .slave_id = 0x11, // MIT 模式，无 ID 偏移
-    .reduction = 1.0f, // 协议反馈输出轴位置，不能再除以内部 6:1 减速比
+    .reduction = 1.0f, // 协议反馈输出轴位置
     .is_invert = true,
     .control_mode = Motor::ANGLE_SPEED_MODE,
     .pid_out_type = Motor::TORQUE_OUTPUT,
