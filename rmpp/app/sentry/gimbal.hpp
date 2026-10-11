@@ -99,7 +99,7 @@ inline EL05 pitch({
     .master_id = EL05::DEFAULT_HOST_ID,
     .slave_id = EL05::DEFAULT_MOTOR_ID,
     .is_invert = false, // EL05 反馈方向与云台 IMU pitch 方向一致
-    .offset = -178 * deg, // 新电机绝对编码器需实机确认 pitch 机械零位
+    .offset = 309.5f * deg, // 新 EL05 枪管水平时的原始反馈角度
     .is_limit = true, // pitch offset 已确认，限制摇杆积分目标不超出机械行程
     .limit_min = -22 * deg,
     .limit_max = 15 * deg,
