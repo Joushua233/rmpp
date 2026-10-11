@@ -80,12 +80,12 @@ inline GM6020 yaw2({
 
 // pitch电机
 inline PID::config_t pitch_speed_pid = {
-    .kp = (0.7f * Nm) / (150 * deg_s),
-    .ki = (0.5f * Nm) / (150 * deg),
+    .kp = (1.2f * Nm) / (150 * deg_s),
+    .ki = (0.3f * Nm) / (150 * deg),
     .kd = (0.5f * Nm) / (1000 * deg_ss),
-    .ff = 0.4f * Nm, // 近水平小角度范围内的重力补偿，正方向为抬升
+    .ff = 0.0f * Nm, // 近水平小角度范围内的重力补偿，正方向为抬升
     .max_i = 0.3f * Nm,
-    .max_out = 3.0f * Nm, // 小幅提高 pitch 输出，继续保留较低联调扭矩
+    .max_out = 4.0f * Nm, // 小幅提高 pitch 输出，继续保留较低联调扭矩
     .fc = 10 * Hz,
 };
 inline PID::config_t pitch_angle_pid = {
