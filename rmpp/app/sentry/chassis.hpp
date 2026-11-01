@@ -98,7 +98,7 @@ inline GM6020 s1({
     .timeout = CHASSIS_FEEDBACK_TIMEOUT,
     .reduction = 1.0f,
     .is_invert = IS_SERVO_INVERT,
-    .offset = -133.5f * deg, // 左前零位
+    .offset = 222.1f * deg, // 左前轮朝前时实测零位
     .control_mode = Motor::ANGLE_MODE,
     .pid_out_type = Motor::CURRENT_OUTPUT,
     .angle_pid_config = &servo_pid,
@@ -110,7 +110,7 @@ inline GM6020 s2({
     .timeout = CHASSIS_FEEDBACK_TIMEOUT,
     .reduction = 1.0f,
     .is_invert = IS_SERVO_INVERT,
-    .offset = 105.7f * deg, // 左后零位
+    .offset = 103.93f * deg, // 左后轮朝前时实测零位
     .control_mode = Motor::ANGLE_MODE,
     .pid_out_type = Motor::CURRENT_OUTPUT,
     .angle_pid_config = &servo_pid,
@@ -122,7 +122,7 @@ inline GM6020 s3({
     .timeout = CHASSIS_FEEDBACK_TIMEOUT,
     .reduction = 1.0f,
     .is_invert = IS_SERVO_INVERT,
-    .offset = -168.5f * deg, // 右后零位偏移 180 度，修正轮子驱动方向
+    .offset = 194.41f * deg, // 右后轮朝前时实测零位
     .control_mode = Motor::ANGLE_MODE,
     .pid_out_type = Motor::CURRENT_OUTPUT,
     .angle_pid_config = &servo_pid,
@@ -134,7 +134,7 @@ inline GM6020 s4({
     .timeout = CHASSIS_FEEDBACK_TIMEOUT,
     .reduction = 1.0f,
     .is_invert = IS_SERVO_INVERT,
-    .offset = -18.4f * deg, // 右前零位
+    .offset = 343.0f * deg, // 右前轮朝前时实测零位
     .control_mode = Motor::ANGLE_MODE,
     .pid_out_type = Motor::CURRENT_OUTPUT,
     .angle_pid_config = &servo_pid,
